@@ -1,0 +1,79 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates a S3 bucket
+Parameters:
+  BucketName:
+    Description: A bucket name
+    Type: String
+    AllowedPattern: "(?!^(d{1,3}.){3}d{1,3}$)(^[a-z0-9]([a-z0-9-]*(.[a-z0-9])?)*$)"
+  BucketEncryptionType:
+    Description: A bucket encryption type.
+    Type: String
+    AllowedValues:
+      - SSE-S3
+      - SSE-KMS
+    Default: SSE-S3
+  BucketEncryptionKey:
+    Description: A bucket encryption key ARN.
+    Type: String
+    AllowedPattern: "^$|arn:(aws[a-zA-Z-]*)?:kms:[a-z]{2}((-gov)|(-iso(b?)))?-[a-z]+-d{1}:d{12}:key:.*"
+    Default: ""
+  Versioning:
+    Description: Bucket versioning support.
+    Type: String
+    AllowedValues:
+      - Enabled
+      - Suspended
+    Default: Suspended
+  ObjectLockEnabled:
+    Description: Object lock settings.
+    Type: String
+    AllowedValues:
+      - True
+      - False
+    Default: False
+  AccessControl:
+    Description: Access control settings.
+    Type: String
+    AllowedValues:
+      - Private
+      - PublicRead
+      - PublicReadWrite
+      - AuthenticatedRead
+      - LogDeliveryWrite
+      - BucketOwnerRead
+      - BucketOwnerFullControl
+      - AwsExecRead
+    Default: Private
+Outputs:
+  BucketName:
+    Description: The bucket name
+    Value: !Ref BucketName
+  BucketARN:
+    Description: A bucket resource name (ARN)
+    Value: !GetAtt
+      - S3Bucket
+      - Arn
+Conditions:
+  UseKMS: !Equals
+    - !Ref BucketEncryptionType
+    - "SSE-KMS"
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: Delete
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: !If [UseKMS, "aws:kms", "AES256"]
+              KMSMasterKeyID: !If [UseKMS, !Ref BucketEncryptionKey, !Ref "AWS::NoValue"]
+      VersioningConfiguration:
+        Status: !Ref Versioning
+      ObjectLockEnabled: !Ref ObjectLockEnabled
+      AccessControl: !Ref AccessControl
+      Tags:
+        - Key: "Name"
+          Value: !Ref BucketName
+...
