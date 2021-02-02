@@ -21,8 +21,8 @@ AWS Management Console
 * Launch in CloudFormation s3bucket.yaml (from the repo you cloned)
 
 
-CloudFormation Parameters
--------------------------
+Stack Parameters
+----------------
 
 | Name                 | Description                 | Default value |
 |:---------------------|:----------------------------|:--------------|
@@ -35,6 +35,16 @@ CloudFormation Parameters
 | WebsiteEnabled       | Static website settings     | `false`       |
 | WebsiteIndexDocument | A website index document    | `index.html`  |
 | WebsiteErrorDocument | A website error document    | `error.html`  |
+
+
+Stack Outputs
+-------------
+
+| Name                 | Description                  |
+|:---------------------|:-----------------------------|
+| BucketName           | A bucket name                |
+| BucketARN            | A bucket resource name (ARN) |
+
 
 # Author
 Dmitrii Ageev <d.ageev@gmail.com>
