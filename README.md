@@ -32,6 +32,9 @@ CloudFormation Parameters
 | ObjectLockEnabled    | Object lock settings        | `False`       |
 | Versioning           | Bucket versioning support   | `Suspended`   |
 | AccessControl        | Access control settings     | `Private`     |
+| WebsiteEnabled       | Static website settings     | `false`       |
+| WebsiteIndexDocument | A website index document    | `index.html`  |
+| WebsiteErrorDocument | A website error document    | `error.html`  |
 
 # Author
 Dmitrii Ageev <d.ageev@gmail.com>

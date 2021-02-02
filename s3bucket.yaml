@@ -29,9 +29,9 @@ Parameters:
     Description: Object lock settings.
     Type: String
     AllowedValues:
-      - True
-      - False
-    Default: False
+      - true
+      - false
+    Default: false
   AccessControl:
     Description: Access control settings.
     Type: String
@@ -45,23 +45,50 @@ Parameters:
       - BucketOwnerFullControl
       - AwsExecRead
     Default: Private
+  WebsiteEnabled:
+    Description: A static website settings.
+    Type: String
+    AllowedValues:
+      - true
+      - false
+    Default: false
+  WebsiteIndexDocument:
+    Description: A default website index document.
+    Type: String
+    Default: index.html
+  WebsiteErrorDocument:
+    Description: A default website error document.
+    Type: String
+    Default: error.html
 Outputs:
   BucketName:
     Description: The bucket name
     Value: !Ref BucketName
   BucketARN:
     Description: A bucket resource name (ARN)
-    Value: !GetAtt
-      - S3Bucket
-      - Arn
+    Value: !If
+      - WebsiteEnabled
+      - !GetAtt
+        - S3BucketWebsite
+        - Arn
+      - !GetAtt
+        - S3Bucket
+        - Arn
 Conditions:
+  WebsiteEnabled: !Equals
+    - !Ref WebsiteEnabled
+    - true
+  WebsiteDisabled: !Equals
+    - !Ref WebsiteEnabled
+    - false
   UseKMS: !Equals
     - !Ref BucketEncryptionType
-    - "SSE-KMS"
+    - SSE-KMS
 Resources:
   S3Bucket:
     Type: "AWS::S3::Bucket"
     DeletionPolicy: Delete
+    Condition: WebsiteDisabled
     Properties:
       BucketName: !Ref BucketName
       BucketEncryption:
@@ -73,6 +100,28 @@ Resources:
         Status: !Ref Versioning
       ObjectLockEnabled: !Ref ObjectLockEnabled
       AccessControl: !Ref AccessControl
+      Tags:
+        - Key: "Name"
+          Value: !Ref BucketName
+
+  S3BucketWebsite:
+    Type: "AWS::S3::Bucket"
+    DeletionPolicy: Delete
+    Condition: WebsiteEnabled
+    Properties:
+      BucketName: !Ref BucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: !If [UseKMS, "aws:kms", "AES256"]
+              KMSMasterKeyID: !If [UseKMS, !Ref BucketEncryptionKey, !Ref "AWS::NoValue"]
+      VersioningConfiguration:
+        Status: !Ref Versioning
+      ObjectLockEnabled: !Ref ObjectLockEnabled
+      AccessControl: !Ref AccessControl
+      WebsiteConfiguration:
+        IndexDocument: !Ref WebsiteIndexDocument
+        ErrorDocument: !Ref WebsiteErrorDocument
       Tags:
         - Key: "Name"
           Value: !Ref BucketName
