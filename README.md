@@ -21,8 +21,7 @@ AWS Management Console
 * Launch in CloudFormation s3bucket.yaml (from the repo you cloned)
 
 
-Stack Parameters
-----------------
+## Stack Parameters:
 
 | Name                 | Description                 | Default value |
 |:---------------------|:----------------------------|:--------------|
@@ -37,8 +36,7 @@ Stack Parameters
 | WebsiteErrorDocument | A website error document    | `error.html`  |
 
 
-Stack Outputs
--------------
+## Stack Outputs:
 
 | Name                 | Description                  |
 |:---------------------|:-----------------------------|
