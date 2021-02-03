@@ -29,7 +29,7 @@ Stack Parameters
 | BucketName           | A bucket name               | [Mandatory]   |
 | BucketEncryptionType | A bucket encryption type    | `SSE-S3`      |
 | BucketEncryptionKey  | A bucket encryption key ARN | ""            |
-| ObjectLockEnabled    | Object lock settings        | `False`       |
+| ObjectLockEnabled    | Object lock settings        | `false`       |
 | Versioning           | Bucket versioning support   | `Suspended`   |
 | AccessControl        | Access control settings     | `Private`     |
 | WebsiteEnabled       | Static website settings     | `false`       |
